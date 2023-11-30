@@ -34,14 +34,6 @@ Simply install to your project:
 sampctl package install paradoxdetth/samp-gamemode-warsaw
 ```
 
-Include in your code and begin using the library:
-
-```pawn
-#include <samp-gamemode-warsaw>
-```
-
-## Usage
-
 <!--
 Write your code documentation or examples here. If your library is documented in
 the source code, direct users there. If not, list your API and describe it well
