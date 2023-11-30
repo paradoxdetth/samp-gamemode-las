@@ -1,7 +1,7 @@
-#if defined engine_options_included
+#if defined vehicle_engine_included
     #endinput
 #endif
-#define engine_options_included
+#define vehicle_engine_included
 
 stock SetEngineStatus(playerid, type)
 {

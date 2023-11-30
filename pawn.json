@@ -9,8 +9,7 @@
 		"pawn-lang/YSI-Includes@5.x",
 		"samp-incognito/samp-streamer-plugin",
 		"Y-Less/sscanf:v2.13.8",
-		"katursis/Pawn.Regex:1.2.3",
-		"pBlueG/SA-MP-MySQL"
+		"katursis/Pawn.Regex:1.2.3"
 
 	],
 	"local": true,
@@ -19,8 +18,8 @@
 		"mode": "server",
 		"rcon_password": "1312",
 		"port": 433,
-		"hostname": "Diamond Community",
-		"maxplayers": 100,
+		"hostname": "Los Angeles Side",
+		"maxplayers": 1000,
 		"language": "English",
 		"mapname": "San Andreas",
 		"weburl": "www.sa-mp.com",

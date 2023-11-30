@@ -23,8 +23,18 @@ static
     user_skin[MAX_PLAYERS],
     user_money[MAX_PLAYERS],
     user_euro[MAX_PLAYERS],
+    user_respects[MAX_PLAYERS],
+    user_needrespects[MAX_PLAYERS],
+    user_activity[MAX_PLAYERS],
 
     server_login_attempts[MAX_PLAYERS];
+
+new Float:SpawnPointLocation[2][4] = 
+{
+	{1609.7417,-2290.8064,13.6506,182.2010},
+	{1629.8912,-2291.2913,13.6506,181.2844}
+
+};
 
 forward data_load(const playerid, const string: name[], const string: value[]);
 public data_load(const playerid, const string: name[], const string: value[])
@@ -37,6 +47,9 @@ public data_load(const playerid, const string: name[], const string: value[])
     INI_Int("Skin", user_skin[playerid]);
     INI_Int("Money", user_money[playerid]);
     INI_Int("Euro", user_euro[playerid]);
+    INI_Int("Respects", user_respects[playerid]);
+    INI_Int("NeedRespects", user_needrespects[playerid]);
+    INI_Int("Activity", user_activity[playerid]);
 
     return 1;
 }
@@ -48,12 +61,18 @@ stock data_path(playerid)
     return string;
 }
 
-stock SetPlayerToSpawn(playerid, type)
+timer SetPlayerToSpawn[100](playerid, type)
 {
+    new __gRandomPos = random(sizeof(SpawnPointLocation));
+
     if(type == __gType_register)
     {
-        SetSpawnInfo(playerid, 0, user_skin[playerid], 2357.8042,-1742.3123,13.5469,9.8522, 0, 0, 0, 0, 0, 0);
+        SetSpawnInfo(playerid, 0, user_skin[playerid], SpawnPointLocation[__gRandomPos][0], SpawnPointLocation[__gRandomPos][1], SpawnPointLocation[__gRandomPos][2], SpawnPointLocation[__gRandomPos][3], 0, 0, 0, 0, 0, 0);
         SpawnPlayer(playerid);
+
+        GameTextForPlayer(playerid, "Ucitavanje...", 3000, 4);
+        defer Loading_Timer(playerid);
+        TogglePlayerControllable(playerid, false);
 
         SetPlayerScore(playerid, user_score[playerid]);
         SetPlayerSkin(playerid, user_skin[playerid]);
@@ -61,12 +80,17 @@ stock SetPlayerToSpawn(playerid, type)
     }
     else if(type == __gType_login)
     {
-        SetSpawnInfo(playerid, 0, user_skin[playerid], 2357.8042,-1742.3123,13.5469,9.8522, 0, 0, 0, 0, 0, 0);
+        SetSpawnInfo(playerid, 0, user_skin[playerid], SpawnPointLocation[__gRandomPos][0], SpawnPointLocation[__gRandomPos][1], SpawnPointLocation[__gRandomPos][2], SpawnPointLocation[__gRandomPos][3], 0, 0, 0, 0, 0, 0);
         SpawnPlayer(playerid);
+
+        GameTextForPlayer(playerid, "Ucitavanje...", 3000, 4);
+        defer Loading_Timer(playerid);
+        TogglePlayerControllable(playerid, false);
 
         SetPlayerScore(playerid, user_score[playerid]);
         SetPlayerSkin(playerid, user_skin[playerid]);
         GivePlayerMoney(playerid, user_money[playerid]);
+        
 
     }
     return 1;
@@ -94,7 +118,7 @@ HOOK__ OnPlayerConnect(playerid)
     {
         INI_ParseFile(data_path(playerid), "data_load", true, true, playerid);
 
-        Dialog_Show(playerid, "dialog_login", DIALOG_STYLE_INPUT, ""c_server"Warsaw Community",
+        Dialog_Show(playerid, "dialog_login", DIALOG_STYLE_INPUT, ""c_server"Los Angeles Side",
         "Dobrodosli "c_server"%s "c_white"na server\n\n\
         U prazno polje unesite vasu lozinku.\n\n\
         Imate "c_server"%d/%d "c_white"pokusaja da upisite tacnu lozinku", 
@@ -102,7 +126,7 @@ HOOK__ OnPlayerConnect(playerid)
     }
     else
     {
-        Dialog_Show(playerid, "dialog_password", DIALOG_STYLE_INPUT, ""c_server"Warsaw Community",
+        Dialog_Show(playerid, "dialog_password", DIALOG_STYLE_INPUT, ""c_server"Los Angeles Side",
         "Dobrodosli "c_server"%s "c_white"na nas server\n\n\
         U prazno polje unesite zeljenu lozinku.\n\
         "c_red"NAPOMENA: Sifra moze imati od %d do %d karaktera.", 
@@ -120,6 +144,9 @@ HOOK__ OnPlayerDisconnect(playerid, reason)
     INI_WriteInt(File, "Skin", GetPlayerSkin(playerid));
     INI_WriteInt(File, "Money", GetPlayerMoney(playerid));
     INI_WriteInt(File, "Euro", user_euro[playerid]);
+    INI_WriteInt(File, "Respects", user_respects[playerid]);
+    INI_WriteInt(File, "NeedRespects", user_needrespects[playerid]);
+    INI_WriteInt(File, "Activity", user_activity[playerid]);
     INI_Close(File);   
 
     return 1;
@@ -143,7 +170,7 @@ Dialog: dialog_password(playerid, response, listitem, string: inputtext[])
     if(!response) return Kick(playerid);
 
     if(!(pass_length_min <= strlen(inputtext) <= pass_length_max))
-        return Dialog_Show(playerid, "dialog_password", DIALOG_STYLE_INPUT, ""c_server"Warsaw Community",
+        return Dialog_Show(playerid, "dialog_password", DIALOG_STYLE_INPUT, ""c_server"Los Angeles Side",
         "Dobrodosli "c_server"%s "c_white"na nas server\n\n\
         U prazno polje unesite zeljenu lozinku.\n\
         "c_red"NAPOMENA: Sifra moze imati od %d do %d karaktera.", 
@@ -151,7 +178,7 @@ Dialog: dialog_password(playerid, response, listitem, string: inputtext[])
     
     strcopy(user_password[playerid], inputtext);
 
-    Dialog_Show(playerid, "dialog_email", DIALOG_STYLE_INPUT, ""c_server"Warsaw Community",
+    Dialog_Show(playerid, "dialog_email", DIALOG_STYLE_INPUT, ""c_server"Los Angeles Side",
     "U prazno polje unesite vas email.\n\n\
     "c_red"NAPOMENA: Email mora biti u formatu example@gmail.com.",
     ""c_server"Next","");
@@ -164,14 +191,14 @@ Dialog: dialog_email(playerid, response, listitem, string: inputtext[])
     if(!response) return Kick(playerid);
 
     if(!IsValidEmail(inputtext))
-        return Dialog_Show(playerid, "dialog_email", DIALOG_STYLE_INPUT, ""c_server"Warsaw Community",
+        return Dialog_Show(playerid, "dialog_email", DIALOG_STYLE_INPUT, ""c_server"Los Angeles Side",
             "U prazno polje unesite vas email.\n\n\
             "c_red"NAPOMENA: Email mora biti u formatu example@gmail.com.",
             ""c_server"Next","");
 
     strcopy(user_email[playerid], inputtext);
 
-    Dialog_Show(playerid, "dialog_country", DIALOG_STYLE_LIST, ""c_server"Warsaw Community",
+    Dialog_Show(playerid, "dialog_country", DIALOG_STYLE_LIST, ""c_server"Los Angeles Side",
     "Bosna i Hercegovina\n\
     Srbija\n\
     Hrvatska\n\
@@ -195,7 +222,7 @@ Dialog: dialog_country(playerid, response, listitem, string: inputtext[])
         case 4: strcopy(user_country[playerid], "Ostalo");
     }
 
-    Dialog_Show(playerid, "dialog_gender", DIALOG_STYLE_LIST, ""c_server"Warsaw Community",
+    Dialog_Show(playerid, "dialog_gender", DIALOG_STYLE_LIST, ""c_server"Los Angeles Side",
     "Musko\n\
     Zensko",
     ""c_server"Next","");
@@ -219,6 +246,9 @@ Dialog: dialog_gender(playerid, response, listitem, string: inputtext[])
 	INI_WriteInt(File, "Skin", 240);
 	INI_WriteInt(File, "Money", 20000);
 	INI_WriteInt(File, "Euro", 100);
+    INI_WriteInt(File, "Respects", 0);
+    INI_WriteInt(File, "NeedRespects", 4);
+    INI_WriteInt(File, "Activity", 0);
 	INI_Close(File);
  
 	user_money[playerid] = 20000;
@@ -226,7 +256,7 @@ Dialog: dialog_gender(playerid, response, listitem, string: inputtext[])
 	user_score[playerid] = 3;
     user_euro[playerid] = 100;
 
-    SetPlayerToSpawn(playerid, 1);
+    defer SetPlayerToSpawn(playerid, 1);
 
     return 1;
 }
@@ -236,7 +266,7 @@ Dialog: dialog_login(playerid, response, listitem, string: inputtext[])
     if(!response) return Kick(playerid);
 
     if(!strcmp(user_password[playerid], inputtext, false))
-        SetPlayerToSpawn(playerid, 2);
+        defer SetPlayerToSpawn(playerid, 2);
     
     else
     {
@@ -244,7 +274,7 @@ Dialog: dialog_login(playerid, response, listitem, string: inputtext[])
             return Kick(playerid);
         
         ++server_login_attempts[playerid];
-        Dialog_Show(playerid, "dialog_login", DIALOG_STYLE_INPUT, ""c_server"Warsaw Community",
+        Dialog_Show(playerid, "dialog_login", DIALOG_STYLE_INPUT, ""c_server"Los Angeles Side",
         "Dobrodosli "c_server"%s "c_white"na server\n\n\
         U prazno polje unesite vasu lozinku.\n\n\
         Imate "c_server"%d/%d "c_white"pokusaja da upisite tacnu lozinku", 

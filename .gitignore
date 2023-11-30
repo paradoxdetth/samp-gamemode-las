@@ -48,3 +48,6 @@ samp.ban
 #
 
 *.sublime-workspace
+tasks.json
+scriptfiles/
+global.inc

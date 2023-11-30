@@ -62,7 +62,8 @@ YCMD:commands(playerid, const string:params[], help)
 {
 	Dialog_Show(playerid, "dialog_commands", DIALOG_STYLE_MSGBOX, 
 		"Player Commands", 
-		""c_blue"CHAT | "c_white"/b /d /t",
+		""c_blue"CHAT | "c_white"/b /d /t\n\
+		"c_blue"HOUSE | "c_white"/buyhouse /sellhouse /houseinfo",
 		"Potvrdi",""
 	);
 
